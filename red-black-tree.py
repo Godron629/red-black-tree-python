@@ -1,28 +1,28 @@
 class Node(object):
 	"""docstring for Node"""
 	def __init__(self, key):
-		super(Node, self).__init__()
 		self.key = key
 		self.right = None
 		self.left = None
-		self.color = None
+		self.color = "Black"
 		self.parent = None
 			
 
 class RedBlackTree(object):
 	"""docstring for RedBlackTree"""
-	def __init__(self, root):
-		super(RedBlackTree, self).__init__()
-		self.root = root
+	def __init__(self, new_node=Node):
+		self.nil = new_node(None)
+		self.root = self.nil
+		self.create_node = create_node
 
-	def left_rotate(T, x):
+	def left_rotate(self, x):
 		y = x.right	
 		x.right = y.left  # Turn y's left subtree into x's right subtree
-		if y.left is not None:
+		if y.left is not self.nil:
 			y.left.parent = x
 		y.parent = x.parent  # Link x's parent to y 
-		if x.parent is None:
-			T.root = y
+		if x.parent is self.nil:
+			self.root = y
 		elif x == x.parent.left:
 			x.parent.left = y
 		else:
@@ -30,14 +30,14 @@ class RedBlackTree(object):
 		y.left = x  # Put x on y's left
 		x.parent = y
 
-	def right_rotate(T, x):
+	def right_rotate(self, x):
 		y = x.left 
 		x.left = y.right  # Turn y's right subtree into x's left subtree
-		if y.right is not None:
+		if y.right is not self.nil:
 			y.right.parent = x
 		y.parent = x.parent  # Link x's parent to y
-		if x.parent is None:
-			T.root = y
+		if x.parent is self.nil:
+			self.root = y
 		elif x == x.parent.right:
 			x.parent.right = y
 		else:
@@ -45,18 +45,18 @@ class RedBlackTree(object):
 		y.right = x # Put x on y's right
 		x.parent = y
 
-	def insert(T, z):
-		y = None
-		x = T.root
-		while x is not None:
+	def insert(self, z):
+		y = self.nil
+		x = self.root
+		while x is not self.nil:
 			y = x
 			if z.key < x.key:
 				x = x.left
 			else: 
 				x = x.right
 		z.parent = y
-		if y is None:
-			T.root = z
+		if y is self.nil:
+			self.root = z
 		elif z.key < y.key: 
 			y.left = z
 		else:
@@ -64,9 +64,37 @@ class RedBlackTree(object):
 		z.left = None
 		z.right = None
 		z.color = "Red"
-		self.insert_fixup(T, z)
+		self.insert_fixup(z)
 
+	def insert_fixup(self, z):
+		while z.parent.color == "Red":
+			if z.parent is z.parent.parent.left:
+				y = z.parent.parent.right
+				if y.color == "Red":
+					z.parent.color = "Black"
+					y.color = "Black"
+					z.parent.parent.color = "Red"
+					z = z.parent.parent
+				else:
+					if z is z.parent.right:
+						z = z.parent
+						self.left_rotate(z)
+					z.parent.color = "Black"
+					z.parent.parent.color = "Red"
+					self.right_rotate(z.parent.parent)
+			else:
+				y = z.parent.parent.left
+				if y.color == "Red":
+					z.parent.color = "Black"
+					y.color = "Black"
+					z.parent.parent.color = "Red"
+					z = z.parent.parent
+				else:
+					if z is z.parent.left:
+						z = z.parent
+						self.right_rotate(z)
+					z.parent.color = "Black"
+					z.parent.parent.color = "Red"
+					self.left_rotate(z.parent.parent)
+		self.root.color = "Black"
 
-
-
-		
