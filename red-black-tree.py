@@ -9,10 +9,10 @@ class Node(object):
         self.isNil = False
 
     def __str__(self):
-        msg = "Key: {}\nRed: {}\nLeft: {}\nRight: {}\nParent: {}".format(self.key, self.red, self.left.key,
-                                                                     self.right.key, self.p.key)
         if self.isNil:
             return "(NIL)"
+        msg = ("Key: {}\nRed: {}\nLeft: {}\nRight: {}\nParent: {}"
+               .format(self.key, self.red, self.left.key, self.right.key, self.p.key))
         if self.p.key is None:
             msg = "(ROOT)\n" + msg
         return msg
@@ -141,7 +141,7 @@ class RedBlackTree(object):
         v.p = u.p
 
     def delete_key(self, z):
-        node = self.search(key)
+        node = self.search(z)
         if node == self.nil:
             return False
         self.delete_node(node)
@@ -168,10 +168,55 @@ class RedBlackTree(object):
             self.transplant(z, y)
             y.left = z.left
             y.left.p = y
-            y.color = z.color
+            y.red = z.red
         if not y_original_color:
-            pass
             #delete_fixup()
+            pass
+
+    def delete_node_fixup(self, x):
+        while x != self.root and not x.red:
+            if x == x.p.left:
+                w = x.p.right
+                if w.red:
+                    w.red = False
+                    x.p.red = True
+                    self.left_rotate(x.p)
+                    w = x.p.right
+                if not w.left.red and not w.right.red:
+                    w.red = True
+                    x = x.p
+                elif not w.red.red:
+                    w.left.red = False
+                    w.red = True
+                    self.right_rotate(w)
+                    w = x.p.right
+                w.red = x.p.color
+                x.p.red = False
+                w.right.red = False
+                self.left_rotate(x.p)
+                x = self.root
+            else:
+                w = x.p.left
+                if w.red:
+                    w.red = False
+                    x.p.red = True
+                    self.right_rotate(x.p)
+                    w = x.p.left
+                if not w.right.red and not w.left.red:
+                    w.red = True
+                    x = x.p
+                elif not w.red:
+                    w.right.red = False
+                    w.red = True
+                    self.left_rotate(w)
+                    w = x.p.left
+                w.red = x.p.color
+                x.p.red = False
+                w.left.red = False
+                self.right_rotate(x.p)
+                x = self.root
+        x.red = False
+
 
 if __name__ == "__main__":
     tree = RedBlackTree()
