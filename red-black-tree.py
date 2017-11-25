@@ -111,6 +111,15 @@ class RedBlackTree(object):
                     self.left_rotate(z.p.p)
         self.root.red = False
 
+    def transplant(self, u, v):
+        if u.p == self.nil:
+            self.root = v
+        elif u == u.p.left:
+            u.p.left = v
+        else:
+            u.p.right = v
+        v.p = u.p
+
 
 if __name__ == "__main__":
     tree = RedBlackTree()
