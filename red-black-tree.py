@@ -111,6 +111,26 @@ class RedBlackTree(object):
                     self.left_rotate(z.p.p)
         self.root.red = False
 
+    def search(self, key, x=None):
+        if x is None:
+            x = self.root
+        while x != self.nil and key != x.key:
+            if key < x.key:
+                x = x.left
+            else:
+                x = x.right
+        return x
+
+    def minimum(self, x=None):
+        if x is None:
+            x = self.root
+
+        if x == self.nil:
+            return self.nil
+        while x.left != self.nil:
+            x = x.left
+        return x
+
     def transplant(self, u, v):
         if u.p == self.nil:
             self.root = v
@@ -120,6 +140,38 @@ class RedBlackTree(object):
             u.p.right = v
         v.p = u.p
 
+    def delete_key(self, z):
+        node = self.search(key)
+        if node == self.nil:
+            return False
+        self.delete_node(node)
+        return True
+
+    def delete_node(self, z):
+        y = z
+        y_original_color = y.red
+        if z.left == self.nil:
+            x = z.right
+            self.transplant(z, z.right)
+        elif z.right == self.nil:
+            x = z.left
+            self.transplant(z, z.left)
+        else:
+            y = self.minimum(z.right)
+            x = y.right
+            if y.p == z:
+                x.p = y
+            else:
+                self.transplant(y, y.right)
+                y.right = z.right
+                y.right.p = y
+            self.transplant(z, y)
+            y.left = z.left
+            y.left.p = y
+            y.color = z.color
+        if not y_original_color:
+            pass
+            #delete_fixup()
 
 if __name__ == "__main__":
     tree = RedBlackTree()
