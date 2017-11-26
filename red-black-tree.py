@@ -158,6 +158,7 @@ class RedBlackTree(object):
             self.transplant(z, z.left)
         else:
             y = self.minimum(z.right)
+            y_original_color = y.red
             x = y.right
             if y.p == z:
                 x.p = y
@@ -170,8 +171,7 @@ class RedBlackTree(object):
             y.left.p = y
             y.red = z.red
         if not y_original_color:
-            #delete_fixup()
-            pass
+            self.delete_node_fixup(x)
 
     def delete_node_fixup(self, x):
         while x != self.root and not x.red:
@@ -225,5 +225,8 @@ if __name__ == "__main__":
     tree.insert(15)
     tree.insert(1)
     tree.insert(3)
+
+    print tree.search(99)
+
 
     i = 5
