@@ -29,10 +29,10 @@ class RedBlackTree(object):
     def left_rotate(self, x):
         y = x.right
         x.right = y.left  # Turn y's left subtree into x's right subtree
-        if y.left is not self.nil:
+        if y.left != self.nil:
             y.left.p = x
         y.p = x.p  # Link x's parent to y
-        if x.p is self.nil:
+        if x.p == self.nil:
             self.root = y
         elif x == x.p.left:
             x.p.left = y
@@ -44,10 +44,10 @@ class RedBlackTree(object):
     def right_rotate(self, x):
         y = x.left
         x.left = y.right  # Turn y's right subtree into x's left subtree
-        if y.right is not self.nil:
+        if y.right != self.nil:
             y.right.p = x
         y.p = x.p  # Link x's parent to y
-        if x.p is self.nil:
+        if x.p == self.nil:
             self.root = y
         elif x == x.p.right:
             x.p.right = y
@@ -56,9 +56,11 @@ class RedBlackTree(object):
         y.right = x # Put x on y's right
         x.p = y
 
-    def insert(self, z):
+    def insert_key(self, z):
+        self.insert_node(Node(z))
+
+    def insert_node(self, z):
         """Insert z node into a tree"""
-        z = Node(z)
         y = self.nil
         x = self.root
         while x != self.nil:
@@ -81,7 +83,7 @@ class RedBlackTree(object):
 
     def insert_fixup(self, z):
         while z.p.red:
-            if z.p is z.p.p.left:
+            if z.p == z.p.p.left:
                 y = z.p.p.right
                 if y.red:
                     z.p.red = False
@@ -89,7 +91,7 @@ class RedBlackTree(object):
                     z.p.p.red = True
                     z = z.p.p
                 else:
-                    if z is z.p.right:
+                    if z == z.p.right:
                         z = z.p
                         self.left_rotate(z)
                     z.p.red = False
@@ -103,7 +105,7 @@ class RedBlackTree(object):
                     z.p.p.red = True
                     z = z.p.p
                 else:
-                    if z is z.p.left:
+                    if z == z.p.left:
                         z = z.p
                         self.right_rotate(z)
                     z.p.red = False
@@ -185,12 +187,12 @@ class RedBlackTree(object):
                 if not w.left.red and not w.right.red:
                     w.red = True
                     x = x.p
-                elif not w.red.red:
+                elif not w.red:
                     w.left.red = False
                     w.red = True
                     self.right_rotate(w)
                     w = x.p.right
-                w.red = x.p.color
+                w.red = x.p.red
                 x.p.red = False
                 w.right.red = False
                 self.left_rotate(x.p)
@@ -210,7 +212,7 @@ class RedBlackTree(object):
                     w.red = True
                     self.left_rotate(w)
                     w = x.p.left
-                w.red = x.p.color
+                w.red = x.p.red
                 x.p.red = False
                 w.left.red = False
                 self.right_rotate(x.p)
@@ -220,13 +222,10 @@ class RedBlackTree(object):
 
 if __name__ == "__main__":
     tree = RedBlackTree()
-    tree.insert(5)
-    tree.insert(10)
-    tree.insert(15)
-    tree.insert(1)
-    tree.insert(3)
-
-    print tree.search(99)
+    for i in range(1,6):
+        tree.insert_key(i)
+    tree.delete_key(4)
+    print tree.root.right
 
 
     i = 5
