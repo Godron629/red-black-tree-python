@@ -1,3 +1,8 @@
+import matplotlib.pyplot as plt
+import numpy as np
+from random import shuffle
+from numpy import log2
+
 class Node(object):
     """docstring for Node"""
     def __init__(self, key):
@@ -175,8 +180,7 @@ class RedBlackTree(object):
         if not y_original_color:
             self.delete_node_fixup(x)  # Why are we passing NIL here?
 
-    def delete_node_fixup(self, x):
-        while x != self.root and not x.red:
+        def delete_node_fixup(self, x):
             if x == x.p.left:
                 w = x.p.right
                 if w.red:  # Case 1: x's sibling w is red
@@ -213,7 +217,7 @@ class RedBlackTree(object):
                         w.right.red = False
                         w.red = True
                         self.left_rotate(w)
-                        w = x.p.left
+                    w = x.p.left
                     w.red = x.p.red
                     x.p.red = False
                     w.left.red = False
@@ -250,22 +254,42 @@ class RedBlackTree(object):
         max_level = _find_max_level(levels)
         _draw_on_screen(levels, max_level)
 
+    def black_height(self, root):
+        """https://www.quora.com/How-do-I-calculate-the-black-height-in-a-red-black-tree"""
+        if root.isNil:
+            return 1
+        left_black_height = self.black_height(root.left)
+        if left_black_height == 0:
+            return left_black_height
+        right_black_height = self.black_height(root.right)
+        if right_black_height == 0:
+            return right_black_height
+        if left_black_height != right_black_height:
+            return 0
+        else:
+            if root.red:
+                return left_black_height
+            return left_black_height + 1
+
 
 if __name__ == "__main__":
     tree = RedBlackTree()
+    black_heights = []
 
-    for i in [3, 5, 6, 7]:
+    black_heights.append(tree.black_height(tree.root))
+
+    n = 2000
+
+    random_nums = list(range(n))
+    shuffle(random_nums)
+
+    for i in range(n):
         tree.insert_key(i)
+        black_heights.append(tree.black_height(tree.root))
 
-    tree.delete_key(7)
-    tree.delete_key(5)
+    black_heights = np.array(black_heights)
 
-    for i in [4, 9, 1, 15, 12, 99]:
-        tree.insert_key(i)
-
-    tree.delete_key(9)
-    tree.insert_key(34)
-
-
-    tree.in_order_walk()
-    i = 5
+    plt.plot(black_heights)
+    plt.axhline(y=(2*log2(n+1)))
+    plt.axis([0, n, 0, (2 * log2(n+1))])
+    plt.show()
