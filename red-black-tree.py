@@ -23,22 +23,22 @@ class RedBlackTree(object):
     def __init__(self, create_node=Node):
         self.nil = create_node(None)
         self.nil.isNil = True
-
+        self.levels = []
         self.root = self.nil
 
     def left_rotate(self, x):
         y = x.right
-        x.right = y.left  # Turn y's left subtree into x's right subtree
+        x.right = y.left
         if y.left != self.nil:
             y.left.p = x
-        y.p = x.p  # Link x's parent to y
+        y.p = x.p
         if x.p == self.nil:
             self.root = y
         elif x == x.p.left:
             x.p.left = y
         else:
             x.p.right = y
-        y.left = x  # Put x on y's left
+        y.left = x
         x.p = y
 
     def right_rotate(self, x):
@@ -219,13 +219,43 @@ class RedBlackTree(object):
                 x = self.root
         x.red = False
 
+    def in_order_walk(self, root=None, level=0):
+        if level == 0:
+            root = self.root
+            self.levels = []
+        if root:
+            self.in_order_walk(root.left, level+1)
+            self.levels.append([level, root.key])
+            self.in_order_walk(root.right, level+1)
+        if level == 0:
+            self.print_levels()
+
+    def print_levels(self):
+        def _find_max_level(levels):
+            max_level = 0
+            for node in levels:
+                if node[0] > max_level:
+                    max_level = node[0]
+            return max_level
+
+        def _draw_on_screen(levels, max_level):
+            print "-----"
+            for i in range(max_level+1):
+                values = [x[1] for x in levels if x[0] == i]  # Group all nodes at ith level
+                print "Level {}: {}".format(i, values)
+
+        levels = self.levels
+        max_level = _find_max_level(levels)
+        _draw_on_screen(levels, max_level)
+
 
 if __name__ == "__main__":
     tree = RedBlackTree()
-    for i in range(1,6):
+
+    for i in [3, 5, 6, 7]:
         tree.insert_key(i)
-    tree.delete_key(4)
-    print tree.root.right
 
-
+    tree.delete_key(7)
+    tree.delete_key(5)
+    tree.in_order_walk()
     i = 5
