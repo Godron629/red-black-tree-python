@@ -180,49 +180,49 @@ class RedBlackTree(object):
         if not y_original_color:
             self.delete_node_fixup(x)  # Why are we passing NIL here?
 
-        def delete_node_fixup(self, x):
-            if x == x.p.left:
+    def delete_node_fixup(self, x):
+        if x == x.p.left:
+            w = x.p.right
+            if w.red:  # Case 1: x's sibling w is red
+                w.red = False
+                x.p.red = True
+                self.left_rotate(x.p)
                 w = x.p.right
-                if w.red:  # Case 1: x's sibling w is red
-                    w.red = False
-                    x.p.red = True
-                    self.left_rotate(x.p)
-                    w = x.p.right
-                if not w.left.red and not w.right.red:  # Case 2: x's sibling w is black, and both of w's children are black
-                    w.red = True
-                    x = x.p
-                else:
-                    if not w.red:  # Case 3: x's sibling w is black, w's left child is red, and w's right child if black
-                        w.left.red = False
-                        w.red = True
-                        self.right_rotate(w)
-                        w = x.p.right
-                    w.red = x.p.red  # Case 4: x's sibling w is black, and w's right child is red
-                    x.p.red = False
-                    w.right.red = False
-                    self.left_rotate(x.p)
-                    x = self.root
+            if not w.left.red and not w.right.red:  # Case 2: x's sibling w is black, and both of w's children are black
+                w.red = True
+                x = x.p
             else:
-                w = x.p.left
-                if w.red:
-                    w.red = False
-                    x.p.red = True
-                    self.right_rotate(x.p)
-                    w = x.p.left
-                if not w.right.red and not w.left.red:
-                    w.red = True
-                    x = x.p
-                else:
-                    if not w.left.red:
-                        w.right.red = False
-                        w.red = True
-                        self.left_rotate(w)
-                    w = x.p.left
-                    w.red = x.p.red
-                    x.p.red = False
+                if not w.red:  # Case 3: x's sibling w is black, w's left child is red, and w's right child if black
                     w.left.red = False
-                    self.right_rotate(x.p)
-                    x = self.root
+                    w.red = True
+                    self.right_rotate(w)
+                    w = x.p.right
+                w.red = x.p.red  # Case 4: x's sibling w is black, and w's right child is red
+                x.p.red = False
+                w.right.red = False
+                self.left_rotate(x.p)
+                x = self.root
+        else:
+            w = x.p.left
+            if w.red:
+                w.red = False
+                x.p.red = True
+                self.right_rotate(x.p)
+                w = x.p.left
+            if not w.right.red and not w.left.red:
+                w.red = True
+                x = x.p
+            else:
+                if not w.left.red:
+                    w.right.red = False
+                    w.red = True
+                    self.left_rotate(w)
+                w = x.p.left
+                w.red = x.p.red
+                x.p.red = False
+                w.left.red = False
+                self.right_rotate(x.p)
+                x = self.root
         x.red = False
 
     def in_order_walk(self, root=None, level=0):
@@ -278,13 +278,16 @@ if __name__ == "__main__":
 
     black_heights.append(tree.black_height(tree.root))
 
-    n = 2000
+    n = 100
 
     random_nums = list(range(n))
     shuffle(random_nums)
 
-    for i in range(n):
+    for i in random_nums:
         tree.insert_key(i)
+        
+    for i in random_nums[:len(random_nums)/2]:
+        tree.delete_key(i)
         black_heights.append(tree.black_height(tree.root))
 
     black_heights = np.array(black_heights)
