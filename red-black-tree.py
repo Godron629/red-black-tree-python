@@ -179,21 +179,21 @@ class RedBlackTree(object):
         while x != self.root and not x.red:
             if x == x.p.left:
                 w = x.p.right
-                if w.red:
+                if w.red:  # Case 1: x's sibling w is red
                     w.red = False
                     x.p.red = True
                     self.left_rotate(x.p)
                     w = x.p.right
-                if not w.left.red and not w.right.red:
+                if not w.left.red and not w.right.red:  # Case 2: x's sibling w is black, and both of w's children are black
                     w.red = True
                     x = x.p
                 else:
-                    if not w.red:
+                    if not w.red:  # Case 3: x's sibling w is black, w's left child is red, and w's right child if black
                         w.left.red = False
                         w.red = True
                         self.right_rotate(w)
                         w = x.p.right
-                    w.red = x.p.red
+                    w.red = x.p.red  # Case 4: x's sibling w is black, and w's right child is red
                     x.p.red = False
                     w.right.red = False
                     self.left_rotate(x.p)
@@ -259,5 +259,13 @@ if __name__ == "__main__":
 
     tree.delete_key(7)
     tree.delete_key(5)
+
+    for i in [4, 9, 1, 15, 12, 99]:
+        tree.insert_key(i)
+
+    tree.delete_key(9)
+    tree.insert_key(34)
+
+
     tree.in_order_walk()
     i = 5
