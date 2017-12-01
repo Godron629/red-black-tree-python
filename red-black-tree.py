@@ -134,7 +134,7 @@ class RedBlackTree(object):
         return x
 
     def transplant(self, u, v):
-        if u.p == self.nil:
+        if u.p.isNil:
             self.root = v
         elif u == u.p.left:
             u.p.left = v
@@ -144,7 +144,7 @@ class RedBlackTree(object):
 
     def delete_key(self, z):
         node = self.search(z)
-        if node == self.nil:
+        if node.isNil:
             return False
         self.delete_node(node)
         return True
@@ -152,10 +152,10 @@ class RedBlackTree(object):
     def delete_node(self, z):
         y = z
         y_original_color = y.red
-        if z.left == self.nil:
+        if z.left.isNil:
             x = z.right
             self.transplant(z, z.right)
-        elif z.right == self.nil:
+        elif z.right.isNil:
             x = z.left
             self.transplant(z, z.left)
         else:
@@ -173,7 +173,7 @@ class RedBlackTree(object):
             y.left.p = y
             y.red = z.red
         if not y_original_color:
-            self.delete_node_fixup(x)
+            self.delete_node_fixup(x)  # Why are we passing NIL here?
 
     def delete_node_fixup(self, x):
         while x != self.root and not x.red:
@@ -215,7 +215,7 @@ class RedBlackTree(object):
                 w.red = x.p.red
                 x.p.red = False
                 w.left.red = False
-                self.right_rotate(x.p)
+                self.right_rotate(x.p)  # right_rotate on NIL node??
                 x = self.root
         x.red = False
 
