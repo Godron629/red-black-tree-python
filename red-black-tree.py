@@ -187,16 +187,17 @@ class RedBlackTree(object):
                 if not w.left.red and not w.right.red:
                     w.red = True
                     x = x.p
-                elif not w.red:
-                    w.left.red = False
-                    w.red = True
-                    self.right_rotate(w)
-                    w = x.p.right
-                w.red = x.p.red
-                x.p.red = False
-                w.right.red = False
-                self.left_rotate(x.p)
-                x = self.root
+                else:
+                    if not w.red:
+                        w.left.red = False
+                        w.red = True
+                        self.right_rotate(w)
+                        w = x.p.right
+                    w.red = x.p.red
+                    x.p.red = False
+                    w.right.red = False
+                    self.left_rotate(x.p)
+                    x = self.root
             else:
                 w = x.p.left
                 if w.red:
@@ -207,16 +208,17 @@ class RedBlackTree(object):
                 if not w.right.red and not w.left.red:
                     w.red = True
                     x = x.p
-                elif not w.red:
-                    w.right.red = False
-                    w.red = True
-                    self.left_rotate(w)
-                    w = x.p.left
-                w.red = x.p.red
-                x.p.red = False
-                w.left.red = False
-                self.right_rotate(x.p)  # right_rotate on NIL node??
-                x = self.root
+                else:
+                    if not w.left.red:
+                        w.right.red = False
+                        w.red = True
+                        self.left_rotate(w)
+                        w = x.p.left
+                    w.red = x.p.red
+                    x.p.red = False
+                    w.left.red = False
+                    self.right_rotate(x.p)
+                    x = self.root
         x.red = False
 
     def in_order_walk(self, root=None, level=0):
