@@ -30,6 +30,7 @@ class RedBlackTree(object):
         self.nil.isNil = True
         self.levels = []
         self.root = self.nil
+        self.number_of_nodes = 0
 
     def left_rotate(self, x):
         y = x.right
@@ -63,6 +64,7 @@ class RedBlackTree(object):
 
     def insert_key(self, z):
         self.insert_node(Node(z))
+        self.number_of_nodes += 1
 
     def insert_node(self, z):
         """Insert z node into a tree"""
@@ -152,6 +154,7 @@ class RedBlackTree(object):
         if node.isNil:
             return False
         self.delete_node(node)
+        self.number_of_nodes -= 1
         return True
 
     def delete_node(self, z):
@@ -286,6 +289,8 @@ if __name__ == "__main__":
 
     for i in random_nums:
         tree.insert_key(i)
+        black_heights.append(i, tree.black_height(tree.root))
+
 
     for i in random_nums[:len(random_nums)/2]:
         tree.delete_key(i)
