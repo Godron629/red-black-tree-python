@@ -147,7 +147,7 @@ class RedBlackTree(object):
         return x
 
     def transplant(self, u, v):
-        if u.p.isNil:
+        if u.p == self.nil:
             self.root = v
         elif u == u.p.left:
             u.p.left = v
@@ -157,7 +157,7 @@ class RedBlackTree(object):
 
     def delete_key(self, z):
         node = self.search(z)
-        if node.isNil:
+        if node == self.nil:
             return False
         self.delete_node(node)
         self.number_of_nodes -= 1
@@ -166,10 +166,10 @@ class RedBlackTree(object):
     def delete_node(self, z):
         y = z
         y_original_color = y.red
-        if z.left.isNil:
+        if z.left == self.nil:
             x = z.right
             self.transplant(z, z.right)
-        elif z.right.isNil:
+        elif z.right == self.nil:
             x = z.left
             self.transplant(z, z.left)
         else:

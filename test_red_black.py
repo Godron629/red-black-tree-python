@@ -99,4 +99,21 @@ class TestRedBlackTree(TestCase):
         tree = self.tree
         self.assertEqual(None, tree.maximum())
 
+    def test_delete_key_that_doesnt_exist(self):
+        tree = self.tree
+        self.assertFalse(tree.delete_key(6))
 
+    def test_delete_single_key(self):
+        tree = self.tree
+        tree.insert(5)
+        tree.delete_key(5)
+        self.assertEqual(tree.search(5), tree.nil)
+        self.assertEqual(tree.number_of_nodes, 0)
+
+    def test_random(self):
+        tree = self.tree
+        for i in [3, 7, 2, 9, 8, 5]:
+            tree.insert(i)
+
+        tree.delete_key(6)
+        tree.in_order_walk()
