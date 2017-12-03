@@ -35,7 +35,7 @@ class RedBlackTree(object):
     def left_rotate(self, x):
         y = x.right
         x.right = y.left
-        if y.left != self.nil and not y.isNil:
+        if y.left != self.nil:
             y.left.p = x
         y.p = x.p
         if x.p == self.nil:
@@ -47,20 +47,20 @@ class RedBlackTree(object):
         y.left = x
         x.p = y
 
-    def right_rotate(self, x):
-        y = x.left
-        x.left = y.right  # Turn y's right subtree into x's left subtree
-        if y.right != self.nil and not y.isNil:
-            y.right.p = x
-        y.p = x.p  # Link x's parent to y
-        if x.p == self.nil:
-            self.root = y
-        elif x == x.p.right:
-            x.p.right = y
+    def right_rotate(self, y):
+        x = y.left
+        y.left = x.right
+        if x.right != self.nil:
+            x.right.p = y
+        x.p = y.p
+        if y == self.nil:
+            y.p.left = x
+        elif y == y.p.right:
+            y.p.right = x
         else:
-            x.p.left = y
-        y.right = x # Put x on y's right
-        x.p = y
+            y.p.left = x
+        x.right = y
+        y.p = x
 
     def insert_key(self, z):
         self.insert_node(Node(z))
@@ -133,10 +133,9 @@ class RedBlackTree(object):
     def minimum(self, x=None):
         if x is None:
             x = self.root
-
-        if x == self.nil:
+        if x.isNil:
             return self.nil
-        while x.left != self.nil:
+        while not x.left.isNil:
             x = x.left
         return x
 
@@ -277,28 +276,38 @@ class RedBlackTree(object):
 
 
 if __name__ == "__main__":
+    from random import randint
     tree = RedBlackTree()
-    black_heights = []
 
-    black_heights.append(tree.black_height(tree.root))
-
-    n = 100
-
-    random_nums = list(range(n))
-    shuffle(random_nums)
-
-    for i in random_nums:
+    for i in range(500):
         tree.insert_key(i)
-        black_heights.append(i, tree.black_height(tree.root))
+
+    for i in range(2000):
+        tree.delete_key(randint(1, 2000))
+
+    i = 5
+    #black_heights = []
+    #number_of_nodes = []
+
+    #black_heights.append(tree.black_height(tree.root))
+    #number_of_nodes.append(tree.number_of_nodes)
+
+    #n = 1000
+
+    #random_nums = list(range(n))
+    #shuffle(random_nums)
+
+    #for i in random_nums:
+        #tree.insert_key(i)
+        #black_heights.append(tree.black_height(tree.root))
+        #number_of_nodes.append(tree.number_of_nodes)
 
 
-    for i in random_nums[:len(random_nums)/2]:
-        tree.delete_key(i)
-        black_heights.append(tree.black_height(tree.root))
+    #black_heights = np.array(black_heights)
+    #number_of_nodes = np.array(number_of_nodes)
 
-    black_heights = np.array(black_heights)
-
-    plt.plot(black_heights)
-    plt.axhline(y=(2*log2(n+1)))
-    plt.axis([0, n, 0, (2 * log2(n+1))])
-    plt.show()
+    #plt.plot(black_heights, label="black height")
+    #plt.plot(2 * log2(number_of_nodes+1), label="number of nodes")
+    #plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)    #plt.axhline(y=(2*log2(n+1)))
+    ##plt.axis([0, n, 0, (2 * log2(n+1))])
+    #plt.show()
