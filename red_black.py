@@ -131,10 +131,19 @@ class RedBlackTree(object):
     def minimum(self, x=None):
         if x is None:
             x = self.root
-        if x.isNil:
-            return self.nil
-        while not x.left.isNil:
+        if x == self.nil:
+            return
+        while x.left != self.nil:
             x = x.left
+        return x
+
+    def maximum(self, x=None):
+        if x is None:
+            x = self.root
+        if x == self.nil:
+            return
+        while x.right != self.nil:
+            x = x.right
         return x
 
     def transplant(self, u, v):

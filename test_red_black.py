@@ -61,5 +61,42 @@ class TestRedBlackTree(TestCase):
         self.assertNode(tree.root.right, 8, red=True)
         self.assertNode(tree.root.right.left, 6)
 
+    def test_minimum_of_tree(self):
+        tree = self.tree
+
+        for i in range(1, 51):
+            tree.insert(i)
+
+        minimum = tree.minimum()
+        self.assertNode(minimum, 1)
+
+        minimum = tree.minimum(tree.root.left)
+        self.assertNode(minimum, 1)
+
+        minimum = tree.minimum(tree.root.right)
+        self.assertNode(minimum, 17)
+
+    def test_maximum_of_tree(self):
+        tree = self.tree
+
+        for i in range(1, 51):
+            tree.insert(i)
+
+        maximum = tree.maximum()
+        self.assertNode(maximum, 50, red=True)
+
+        maximum = tree.maximum(tree.root.left)
+        self.assertNode(maximum, 15)
+
+        maximum = tree.maximum(tree.root.right)
+        self.assertNode(maximum, 50, red=True)
+
+    def test_minimum_of_empty_tree(self):
+        tree = self.tree
+        self.assertEqual(None, tree.minimum())
+
+    def test_maximum_of_empty_tree(self):
+        tree = self.tree
+        self.assertEqual(None, tree.maximum())
 
 
