@@ -212,7 +212,7 @@ class RedBlackTree(object):
                     w.right.red = False
                     self.left_rotate(x.p)
                     x = self.root
-            else:
+            elif x == x.p.right:
                 w = x.p.left
                 if w.red:
                     w.red = False
