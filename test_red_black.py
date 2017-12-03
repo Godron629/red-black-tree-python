@@ -115,5 +115,9 @@ class TestRedBlackTree(TestCase):
         for i in [3, 7, 2, 9, 8, 5]:
             tree.insert(i)
 
-        tree.delete_key(6)
+        tree.delete_key(3)
+        tree.delete_key(2)
+        tree.delete_key(7)
+
+
         tree.in_order_walk()

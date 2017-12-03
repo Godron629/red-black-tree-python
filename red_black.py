@@ -202,7 +202,7 @@ class RedBlackTree(object):
                     w.red = True
                     x = x.p
                 else:
-                    if not w.red:  # Case 3: x's sibling w is black, w's left child is red, and w's right child if black
+                    if not w.red:
                         w.left.red = False
                         w.red = True
                         self.right_rotate(w)
@@ -223,11 +223,11 @@ class RedBlackTree(object):
                     w.red = True
                     x = x.p
                 else:
-                    if not w.left.red:
+                    if not w.left.red:  # TODO: Is this an else if... or an elif?
                         w.right.red = False
                         w.red = True
                         self.left_rotate(w)
-                    w = x.p.left
+                        w = x.p.left
                     w.red = x.p.red
                     x.p.red = False
                     w.left.red = False
