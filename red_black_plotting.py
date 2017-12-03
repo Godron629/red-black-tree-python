@@ -2,6 +2,7 @@ import random
 
 import matplotlib.pyplot as plt
 import numpy as np
+from pympler import asizeof
 
 from red_black import RedBlackTree
 
@@ -59,6 +60,23 @@ def plot_nodes_considered_during_repeated_search():
     plt.legend()
     plt.show()
 
+def plot_size_of_tree_in_memory_during_one_hundred_inserts():
+    tree = RedBlackTree()
+    size_of_tree = []
+    n_size = []
+    for i in range(100):
+        tree.insert(i)
+        size_of_tree.append(asizeof.asizeof(tree))
+        n_size.append(i*190)
+
+    plt.title("Memory Size of Tree During 100 Inserts")
+    plt.plot(size_of_tree, label="Byte Size of Tree")
+    plt.plot(n_size, label="Worst Case n Size * 190")
+    plt.legend()
+    plt.show()
+
+
 if __name__ == "__main__":
-    plot_ten_thousand_in_order_inserts()
-    plot_nodes_considered_during_repeated_search()
+    #plot_ten_thousand_in_order_inserts()
+    #plot_nodes_considered_during_repeated_search()
+    plot_size_of_tree_in_memory_during_one_hundred_inserts()
