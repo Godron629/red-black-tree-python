@@ -110,6 +110,24 @@ class TestRedBlackTree(TestCase):
         self.assertEqual(tree.search(5), tree.nil)
         self.assertEqual(tree.number_of_nodes, 0)
 
+    def test_delete_fix_up_case_1(self):
+        """This tests case 2 as well but oh well"""
+        tree = self.tree
+        for i in [2, 3, 7, 9, 5]:
+            tree.insert(i)
+
+        tree.root.right.red = True
+        tree.root.right.right.red = False
+        tree.root.right.left.red = False
+
+        tree.delete_node_fixup(tree.root.left)
+
+        self.assertNode(tree.root, 7)
+        self.assertNode(tree.root.left, 3)
+        self.assertNode(tree.root.right, 9)
+        self.assertNode(tree.root.left.left, 2)
+        self.assertNode(tree.root.left.right, 5, red=True)
+
     def test_random(self):
         tree = self.tree
         for i in [3, 7, 2, 9, 8, 5]:
