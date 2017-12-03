@@ -23,6 +23,8 @@ class RedBlackTree(object):
         self.root = self.nil
         self.levels = []
         self.number_of_nodes = 0
+        self.nodes_considered = 0
+        self.black_nodes_considered = 0
 
     def left_rotate(self, x):
         y = x.right
@@ -111,9 +113,17 @@ class RedBlackTree(object):
         self.root.red = False
 
     def search(self, key, x=None):
+        self.black_nodes_considered = 0
+        self.nodes_considered = 0
+
         if x is None:
             x = self.root
         while x != self.nil and key != x.key:
+
+            self.nodes_considered += 1
+            if x is not None and not x.red:
+                self.black_nodes_considered += 1
+
             if key < x.key:
                 x = x.left
             else:
