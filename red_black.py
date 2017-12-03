@@ -62,12 +62,9 @@ class RedBlackTree(object):
         x.right = y
         y.p = x
 
-    def insert_key(self, z):
-        self.insert_node(Node(z))
-        self.number_of_nodes += 1
-
-    def insert_node(self, z):
+    def insert(self, z):
         """Insert z node into a tree"""
+        z = Node(z)
         y = self.nil
         x = self.root
         while x != self.nil:
@@ -87,6 +84,7 @@ class RedBlackTree(object):
         z.right = self.nil
         z.red = True
         self.insert_fixup(z)
+        self.number_of_nodes += 1
 
     def insert_fixup(self, z):
         while z.p.red:

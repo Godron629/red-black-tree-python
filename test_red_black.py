@@ -14,22 +14,21 @@ class TestRedBlackTree(TestCase):
 
     def test_insert_one_key(self):
         tree = self.tree
-        tree.insert_key(5)
+        tree.insert(5)
         self.assertNode(tree.root, 5)
 
     def test_insert_one_hundred_keys(self):
         tree = self.tree
         for i in range(100):
-            tree.insert_key(i)
+            tree.insert(i)
 
         self.assertEqual(tree.number_of_nodes, 100)
-
 
     def test_right_rotate(self):
         tree = self.tree
 
         for i in [3, 5, 2, 1]:
-            tree.insert_key(i)
+            tree.insert(i)
 
         root = tree.root
         self.assertNode(root, 3)
@@ -48,7 +47,7 @@ class TestRedBlackTree(TestCase):
         tree = self.tree
 
         for i in [3, 1, 6, 8]:
-            tree.insert_key(i)
+            tree.insert(i)
 
         self.assertNode(tree.root, 3)
         self.assertNode(tree.root.left, 1)
