@@ -1,8 +1,3 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from random import shuffle
-from numpy import log2
-
 class Node(object):
     """docstring for Node"""
     def __init__(self, key):
@@ -280,41 +275,3 @@ class RedBlackTree(object):
             if root.red:
                 return left_black_height
             return left_black_height + 1
-
-
-if __name__ == "__main__":
-    from random import randint
-    tree = RedBlackTree()
-
-    for i in range(500):
-        tree.insert_key(i)
-
-    for i in range(2000):
-        tree.delete_key(randint(1, 2000))
-
-    i = 5
-    #black_heights = []
-    #number_of_nodes = []
-
-    #black_heights.append(tree.black_height(tree.root))
-    #number_of_nodes.append(tree.number_of_nodes)
-
-    #n = 1000
-
-    #random_nums = list(range(n))
-    #shuffle(random_nums)
-
-    #for i in random_nums:
-        #tree.insert_key(i)
-        #black_heights.append(tree.black_height(tree.root))
-        #number_of_nodes.append(tree.number_of_nodes)
-
-
-    #black_heights = np.array(black_heights)
-    #number_of_nodes = np.array(number_of_nodes)
-
-    #plt.plot(black_heights, label="black height")
-    #plt.plot(2 * log2(number_of_nodes+1), label="number of nodes")
-    #plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)    #plt.axhline(y=(2*log2(n+1)))
-    ##plt.axis([0, n, 0, (2 * log2(n+1))])
-    #plt.show()
