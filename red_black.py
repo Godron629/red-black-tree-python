@@ -1,16 +1,14 @@
 class Node(object):
-    """docstring for Node"""
+    """Red-Black Tree Node
+    - Similar to a binary tree node with color property"""
     def __init__(self, key):
         self.key = key
         self.right = None
         self.left = None
         self.red = False
         self.p = None
-        self.isNil = False
 
     def __str__(self):
-        if self.isNil:
-            return "(NIL)"
         msg = ("Key: {}\nRed: {}\nLeft: {}\nRight: {}\nParent: {}"
                .format(self.key, self.red, self.left.key, self.right.key, self.p.key))
         if self.p.key is None:
@@ -19,12 +17,11 @@ class Node(object):
 
 
 class RedBlackTree(object):
-    """docstring for RedBlackTree"""
+    """Non-Modified Red-Black Tree"""
     def __init__(self, create_node=Node):
         self.nil = create_node(None)
-        self.nil.isNil = True
-        self.levels = []
         self.root = self.nil
+        self.levels = []
         self.number_of_nodes = 0
 
     def left_rotate(self, x):
@@ -260,15 +257,18 @@ class RedBlackTree(object):
         _draw_on_screen(levels, max_level)
 
     def black_height(self, root):
-        """https://www.quora.com/How-do-I-calculate-the-black-height-in-a-red-black-tree"""
-        if root.isNil:
+        """https://stackoverflow.com/questions/13848011/how-to-check-the-black-height-of-a-node-for-all-paths-to-its-descendent-leaves"""
+        if root == self.nil:
             return 1
+
         left_black_height = self.black_height(root.left)
         if left_black_height == 0:
             return left_black_height
+
         right_black_height = self.black_height(root.right)
         if right_black_height == 0:
             return right_black_height
+
         if left_black_height != right_black_height:
             return 0
         else:
