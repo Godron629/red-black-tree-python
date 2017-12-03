@@ -1,3 +1,5 @@
+import timeit
+
 class Node(object):
     """Red-Black Tree Node
     - Similar to a binary tree node with color property"""
@@ -24,7 +26,10 @@ class RedBlackTree(object):
         self.levels = []
         self.number_of_nodes = 0
         self.nodes_considered = 0
-        self.black_nodes_considered = 0
+        self.insert_time = 0
+        self.delete_time = 0
+        self.insert_fixup_time = 0
+        self.delete_fixup_time = 0
 
     def left_rotate(self, x):
         y = x.right
@@ -58,6 +63,9 @@ class RedBlackTree(object):
 
     def insert(self, z):
         """Insert z node into a tree"""
+        #self.insert_time = 0
+        #insert_start_time = timeit.timeit()
+
         z = Node(z)
         y = self.nil
         x = self.root
@@ -77,8 +85,18 @@ class RedBlackTree(object):
         z.left = self.nil
         z.right = self.nil
         z.red = True
+
+        #insert_end_time = timeit.timeit()
+        #self.insert_time = insert_end_time - insert_start_time
+
+        #self.insert_fixup_time = 0
+        #insert_fixup_start_time = timeit.timeit()
+
         self.insert_fixup(z)
+
         self.number_of_nodes += 1
+        #insert_fixup_end_time = timeit.timeit()
+        #self.insert_fixup_time = insert_fixup_end_time - insert_fixup_start_time
 
     def insert_fixup(self, z):
         while z.p.red:
@@ -113,17 +131,12 @@ class RedBlackTree(object):
         self.root.red = False
 
     def search(self, key, x=None):
-        self.black_nodes_considered = 0
         self.nodes_considered = 0
 
         if x is None:
             x = self.root
         while x != self.nil and key != x.key:
-
             self.nodes_considered += 1
-            if x is not None and not x.red:
-                self.black_nodes_considered += 1
-
             if key < x.key:
                 x = x.left
             else:
@@ -166,6 +179,7 @@ class RedBlackTree(object):
         return True
 
     def delete_node(self, z):
+        delete_node_start = timeit.timeit()
         y = z
         y_original_color = y.red
         if z.left == self.nil:
@@ -188,8 +202,18 @@ class RedBlackTree(object):
             y.left = z.left
             y.left.p = y
             y.red = z.red
+
+        delete_node_end = timeit.timeit()
+        self.delete_time = delete_node_end - delete_node_start
+
         if not y_original_color:
+            delete_fixup_start = timeit.timeit()
+
             self.delete_node_fixup(x)  # Why are we passing NIL here?
+
+            delete_fixup_end = timeit.timeit()
+            self.delete_fixup_time = delete_fixup_end - delete_fixup_start
+
 
     def delete_node_fixup(self, x):
         while x != self.root and not x.red:
