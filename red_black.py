@@ -61,10 +61,10 @@ class RedBlackTree(object):
         x.right = y
         y.p = x
 
-    def insert(self, z):
+    def insert(self, z, time=False):
         """Insert z node into a tree"""
-        #self.insert_time = 0
-        #insert_start_time = timeit.timeit()
+        if time:
+            insert_start_time = timeit.timeit()
 
         z = Node(z)
         y = self.nil
@@ -86,17 +86,18 @@ class RedBlackTree(object):
         z.right = self.nil
         z.red = True
 
-        #insert_end_time = timeit.timeit()
-        #self.insert_time = insert_end_time - insert_start_time
-
-        #self.insert_fixup_time = 0
-        #insert_fixup_start_time = timeit.timeit()
+        if time:
+            insert_end_time = timeit.timeit()
+            self.insert_time = insert_end_time - insert_start_time
+            insert_fixup_start_time = timeit.timeit()
 
         self.insert_fixup(z)
 
+        if time:
+            insert_fixup_end_time = timeit.timeit()
+            self.insert_fixup_time = insert_fixup_end_time - insert_fixup_start_time
+
         self.number_of_nodes += 1
-        #insert_fixup_end_time = timeit.timeit()
-        #self.insert_fixup_time = insert_fixup_end_time - insert_fixup_start_time
 
     def insert_fixup(self, z):
         while z.p.red:
@@ -170,16 +171,18 @@ class RedBlackTree(object):
             u.p.right = v
         v.p = u.p
 
-    def delete_key(self, z):
+    def delete_key(self, z, time=False):
         node = self.search(z)
         if node == self.nil:
             return False
-        self.delete_node(node)
+        self.delete_node(node, time=time)
         self.number_of_nodes -= 1
         return True
 
-    def delete_node(self, z):
-        delete_node_start = timeit.timeit()
+    def delete_node(self, z, time=False):
+        if time:
+            delete_node_start = timeit.timeit()
+
         y = z
         y_original_color = y.red
         if z.left == self.nil:
@@ -203,14 +206,16 @@ class RedBlackTree(object):
             y.left.p = y
             y.red = z.red
 
-        delete_node_end = timeit.timeit()
-        self.delete_time = delete_node_end - delete_node_start
+        if time:
+            delete_node_end = timeit.timeit()
+            self.delete_time = delete_node_end - delete_node_start
+            delete_fixup_start = timeit.timeit()
 
         if not y_original_color:
-            delete_fixup_start = timeit.timeit()
 
             self.delete_node_fixup(x)  # Why are we passing NIL here?
 
+        if time:
             delete_fixup_end = timeit.timeit()
             self.delete_fixup_time = delete_fixup_end - delete_fixup_start
 
