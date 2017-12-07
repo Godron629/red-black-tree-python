@@ -2,24 +2,34 @@ import timeit
 
 class Node(object):
     """Red-Black Tree Node
-    - Similar to a binary tree node with color property"""
+    - Similar to a binary tree node with additional color property"""
     def __init__(self, key):
         self.key = key
         self.right = None
         self.left = None
         self.red = False
-        self.p = None
+        self.parent = None
 
     def __str__(self):
         msg = ("Key: {}\nRed: {}\nLeft: {}\nRight: {}\nParent: {}"
-               .format(self.key, self.red, self.left.key, self.right.key, self.p.key))
-        if self.p.key is None:
+               .format(
+                   self.key,
+                   self.red,
+                   self.left.key,
+                   self.right.key,
+                   self.parent.key
+               ))
+
+        if self.parent.key is None:
             msg = "(ROOT)\n" + msg
+
         return msg
 
 
 class RedBlackTree(object):
-    """Non-Modified Red-Black Tree"""
+    """Non-Modified Red-Black Tree
+    - Introduction to Algorithms 3620 Project
+    - Cormen, Thomas H.., et al. Introduction to Algorithms. 3rd ed., MIT Press, 2009."""
     def __init__(self, create_node=Node):
         self.nil = create_node(None)
         self.root = self.nil
@@ -32,179 +42,229 @@ class RedBlackTree(object):
         self.delete_fixup_time = 0
 
     def left_rotate(self, x):
+        """
+        ...       ...
+         x          y
+          \   =>   /
+           y      x
+
+        """
         y = x.right
         x.right = y.left
         if y.left != self.nil:
-            y.left.p = x
-        y.p = x.p
-        if x.p == self.nil:
+            y.left.parent = x
+        y.parent = x.parent
+        if x.parent == self.nil:
             self.root = y
-        elif x == x.p.left:
-            x.p.left = y
+        elif x == x.parent.left:
+            x.parent.left = y
         else:
-            x.p.right = y
+            x.parent.right = y
         y.left = x
-        x.p = y
+        x.parent = y
 
     def right_rotate(self, y):
+        """
+        ...       ...
+         x          y
+          \   <=   /
+           y      x
+
+        """
         x = y.left
         y.left = x.right
-        if x.right != self.nil:
-            x.right.p = y
-        x.p = y.p
-        if y == self.nil:
-            y.p.left = x
-        elif y == y.p.right:
-            y.p.right = x
-        else:
-            y.p.left = x
-        x.right = y
-        y.p = x
 
-    def insert(self, z, time=False):
-        """Insert z node into a tree"""
+        if x.right != self.nil:
+            x.right.parent = y
+        x.parent = y.parent
+        if y == self.nil:
+            y.parent.left = x
+        elif y == y.parent.right:
+            y.parent.right = x
+        else:
+            y.parent.left = x
+        x.right = y
+        y.parent = x
+
+    def insert(self, new_node, time=False):
+        """Insert new_node into a tree by way of binary search"""
         if time:
             insert_start_time = timeit.timeit()
 
-        z = Node(z)
+        new_node = Node(new_node)
         y = self.nil
         x = self.root
+
         while x != self.nil:
             y = x
-            if z.key < x.key:
+            if new_node.key < x.key:
                 x = x.left
             else:
                 x = x.right
-        z.p = y
+        new_node.parent = y
         if y == self.nil:
-            self.root = z
-        elif z.key < y.key:
-            y.left = z
+            self.root = new_node
+        elif new_node.key < y.key:
+            y.left = new_node
         else:
-            y.right = z
-        z.left = self.nil
-        z.right = self.nil
-        z.red = True
+            y.right = new_node
+
+        new_node.left = self.nil
+        new_node.right = self.nil
+        new_node.red = True
 
         if time:
             insert_end_time = timeit.timeit()
             self.insert_time = insert_end_time - insert_start_time
             insert_fixup_start_time = timeit.timeit()
 
-        self.insert_fixup(z)
+        self.insert_fixup(new_node)
 
         if time:
             insert_fixup_end_time = timeit.timeit()
             self.insert_fixup_time = insert_fixup_end_time - insert_fixup_start_time
-
         self.number_of_nodes += 1
 
-    def insert_fixup(self, z):
-        while z.p.red:
-            if z.p == z.p.p.left:
-                y = z.p.p.right
-                if y.red:
-                    z.p.red = False
-                    y.red = False
-                    z.p.p.red = True
-                    z = z.p.p
+    def insert_fixup(self, new_node):
+        """Fix potential violations of Red-Black properties
+        resulting from insertion of new_node
+
+        Red-Black Properties:
+        - 1: Every node is either red or black
+        - 2: The root is black
+        - 3: Every leaf (NIL) is black
+        - 4: If a node is red, then both its children are black
+        - 5: For each node, all simple paths from the node to descendant
+             leaves contain the same number of black nodes"""
+
+        while new_node.parent.red:
+            # Parent of new_node is a left child
+            if new_node.parent == new_node.parent.parent.left:
+                uncle = new_node.parent.parent.right
+                # Case 1: new_node's uncle is red
+                # - Color uncle and parent black
+                if uncle.red:
+                    new_node.parent.red = False
+                    uncle.red = False
+                    new_node.parent.parent.red = True
+                    new_node = new_node.parent.parent
                 else:
-                    if z == z.p.right:
-                        z = z.p
-                        self.left_rotate(z)
-                    z.p.red = False
-                    z.p.p.red = True
-                    self.right_rotate(z.p.p)
+                    # Case 2: new_node's uncle is black and new_node is a right child
+                    # - left_rotate and continue as if new_node was its parent
+                    if new_node == new_node.parent.right:
+                        new_node = new_node.parent
+                        self.left_rotate(new_node)
+                    # Case 3: new_node's uncle is black and new_node is a left child
+                    # - right_rotate and continue as if new_node was its parent
+                    new_node.parent.red = False
+                    new_node.parent.parent.red = True
+                    self.right_rotate(new_node.parent.parent)
+            # Parent of new_node is a right child: The same routine as above with L/R reversed
             else:
-                y = z.p.p.left
-                if y.red:
-                    z.p.red = False
-                    y.red = False
-                    z.p.p.red = True
-                    z = z.p.p
+                uncle = new_node.parent.parent.left
+                if uncle.red:
+                    new_node.parent.red = False
+                    uncle.red = False
+                    new_node.parent.parent.red = True
+                    new_node = new_node.parent.parent
                 else:
-                    if z == z.p.left:
-                        z = z.p
-                        self.right_rotate(z)
-                    z.p.red = False
-                    z.p.p.red = True
-                    self.left_rotate(z.p.p)
+                    if new_node == new_node.parent.left:
+                        new_node = new_node.parent
+                        self.right_rotate(new_node)
+                    new_node.parent.red = False
+                    new_node.parent.parent.red = True
+                    self.left_rotate(new_node.parent.parent)
         self.root.red = False
 
-    def search(self, key, x=None):
+    def search(self, key, root=None):
+        """Binary Search to find key in tree rooted at root"""
         self.nodes_considered = 0
 
-        if x is None:
-            x = self.root
-        while x != self.nil and key != x.key:
+        if root is None:
+            root = self.root
+
+        while root != self.nil and key != root.key:
             self.nodes_considered += 1
-            if key < x.key:
-                x = x.left
+            if key < root.key:
+                root = root.left
             else:
-                x = x.right
-        return x
+                root = root.right
 
-    def minimum(self, x=None):
-        if x is None:
-            x = self.root
-        if x == self.nil:
-            return
-        while x.left != self.nil:
-            x = x.left
-        return x
+        return root
 
-    def maximum(self, x=None):
-        if x is None:
-            x = self.root
-        if x == self.nil:
+    def minimum(self, root=None):
+        """Find the minimum node of a tree rooted at root"""
+        if root is None:
+            root = self.root
+
+        if root == self.nil:
             return
-        while x.right != self.nil:
-            x = x.right
-        return x
+        while root.left != self.nil:
+            root = root.left
+
+        return root
+
+    def maximum(self, root=None):
+        """Find the maximum node of a tree rooted at root"""
+        if root is None:
+            root = self.root
+
+        if root == self.nil:
+            return
+        while root.right != self.nil:
+            root = root.right
+
+        return root
 
     def transplant(self, u, v):
-        if u.p == self.nil:
+        """Replace subtree rooted at u with subtree rooted at v
+        - Used in delete_node"""
+        if u.parent == self.nil:
             self.root = v
-        elif u == u.p.left:
-            u.p.left = v
+        elif u == u.parent.left:
+            u.parent.left = v
         else:
-            u.p.right = v
-        v.p = u.p
+            u.parent.right = v
+        v.parent = u.parent
 
-    def delete_key(self, z, time=False):
-        node = self.search(z)
+    def delete_key(self, key, time=False):
+        """Precursor to delete_node, where we search for the node
+        and exit appropriately if the node is not found"""
+        node = self.search(key)
         if node == self.nil:
             return False
         self.delete_node(node, time=time)
         self.number_of_nodes -= 1
         return True
 
-    def delete_node(self, z, time=False):
+    def delete_node(self, node, time=False):
         if time:
             delete_node_start = timeit.timeit()
 
-        y = z
+        y = node
         y_original_color = y.red
-        if z.left == self.nil:
-            x = z.right
-            self.transplant(z, z.right)
-        elif z.right == self.nil:
-            x = z.left
-            self.transplant(z, z.left)
+
+        if node.left == self.nil:
+            x = node.right
+            self.transplant(node, node.right)
+        elif node.right == self.nil:
+            x = node.left
+            self.transplant(node, node.left)
+
         else:
-            y = self.minimum(z.right)
+            y = self.minimum(node.right)
             y_original_color = y.red
             x = y.right
-            if y.p == z:
-                x.p = y
+            if y.parent == node:
+                x.parent = y
             else:
                 self.transplant(y, y.right)
-                y.right = z.right
-                y.right.p = y
-            self.transplant(z, y)
-            y.left = z.left
-            y.left.p = y
-            y.red = z.red
+                y.right = node.right
+                y.right.parent = y
+            self.transplant(node, y)
+            y.left = node.left
+            y.left.parent = y
+            y.red = node.red
 
         if time:
             delete_node_end = timeit.timeit()
@@ -212,61 +272,72 @@ class RedBlackTree(object):
             delete_fixup_start = timeit.timeit()
 
         if not y_original_color:
-
-            self.delete_node_fixup(x)  # Why are we passing NIL here?
+            self.delete_node_fixup(x)
 
         if time:
             delete_fixup_end = timeit.timeit()
             self.delete_fixup_time = delete_fixup_end - delete_fixup_start
 
-
-    def delete_node_fixup(self, x):
-        while x != self.root and not x.red:
-            if x == x.p.left:
-                w = x.p.right
-                if w.red:  # Case 1: x's sibling w is red
-                    w.red = False
-                    x.p.red = True
-                    self.left_rotate(x.p)
-                    w = x.p.right
-                if not w.left.red and not w.right.red:  # Case 2: x's sibling w is black, and both of w's children are black
-                    w.red = True
-                    x = x.p
+    def delete_node_fixup(self, node):
+        while node != self.root and not node.red:
+            # node is a left child
+            if node == node.parent.left:
+                sibling = node.parent.right
+                # Case 1: Sibling  is red
+                # - Since w must have black children,
+                # -- Switch the color of node's sibling and parent
+                # -- Perform left_rotate on nodes parent
+                if sibling.red:
+                    sibling.red = False
+                    node.parent.red = True
+                    self.left_rotate(node.parent)
+                    sibling = node.parent.right
+                # Case 2: Sibling is black, both sibling's children are black
+                if not sibling.left.red and not sibling.right.red:
+                    sibling.red = True
+                    node = node.parent
                 else:
-                    if not w.red:
-                        w.left.red = False
-                        w.red = True
-                        self.right_rotate(w)
-                        w = x.p.right
-                    w.red = x.p.red  # Case 4: x's sibling w is black, and w's right child is red
-                    x.p.red = False
-                    w.right.red = False
-                    self.left_rotate(x.p)
-                    x = self.root
-            elif x == x.p.right:
-                w = x.p.left
-                if w.red:
-                    w.red = False
-                    x.p.red = True
-                    self.right_rotate(x.p)
-                    w = x.p.left
-                if not w.right.red and not w.left.red:
-                    w.red = True
-                    x = x.p
+                    # Case 3: Sibling is black, and has a red left child and black right child
+                    # - Switch the colors of sibling and its left child
+                    # - Perform right_rotation on sibling
+                    if not sibling.red:
+                        sibling.left.red = False
+                        sibling.red = True
+                        self.right_rotate(sibling)
+                        sibling = node.parent.right
+                    # Case 4: Sibling is black and sibling's right child is red
+                    sibling.red = node.parent.red
+                    node.parent.red = False
+                    sibling.right.red = False
+                    self.left_rotate(node.parent)
+                    node = self.root
+            # node is a right child, perform the same routine but with L/R exchanged
+            elif node == node.parent.right:
+                sibling = node.parent.left
+                if sibling.red:
+                    sibling.red = False
+                    node.parent.red = True
+                    self.right_rotate(node.parent)
+                    sibling = node.parent.left
+                if not sibling.right.red and not sibling.left.red:
+                    sibling.red = True
+                    node = node.parent
                 else:
-                    if not w.left.red:  # TODO: Is this an else if... or an elif?
-                        w.right.red = False
-                        w.red = True
-                        self.left_rotate(w)
-                        w = x.p.left
-                    w.red = x.p.red
-                    x.p.red = False
-                    w.left.red = False
-                    self.right_rotate(x.p)
-                    x = self.root
-        x.red = False
+                    if not sibling.left.red:
+                        sibling.right.red = False
+                        sibling.red = True
+                        self.left_rotate(sibling)
+                        sibling = node.parent.left
+                    sibling.red = node.parent.red
+                    node.parent.red = False
+                    sibling.left.red = False
+                    self.right_rotate(node.parent)
+                    node = self.root
+        node.red = False
 
     def in_order_walk(self, root=None, level=0):
+        """In-order-walk the binary tree and make a list that
+        is an approximate representation of the tree """
         if level == 0:
             root = self.root
             self.levels = []
@@ -275,28 +346,29 @@ class RedBlackTree(object):
             self.levels.append([level, root.key])
             self.in_order_walk(root.right, level+1)
         if level == 0:
-            self.print_levels()
+            self._print_levels()
 
-    def print_levels(self):
-        def _find_max_level(levels):
+    def _print_levels(self):
+        def __find_max_level(levels):
             max_level = 0
             for node in levels:
                 if node[0] > max_level:
                     max_level = node[0]
             return max_level
 
-        def _draw_on_screen(levels, max_level):
+        def __draw_on_screen(levels, max_level):
             print "-----"
             for i in range(max_level+1):
                 values = [x[1] for x in levels if x[0] == i]  # Group all nodes at ith level
                 print "Level {}: {}".format(i, values)
 
         levels = self.levels
-        max_level = _find_max_level(levels)
-        _draw_on_screen(levels, max_level)
+        max_level = __find_max_level(levels)
+        __draw_on_screen(levels, max_level)
 
     def black_height(self, root):
-        """https://stackoverflow.com/questions/13848011/how-to-check-the-black-height-of-a-node-for-all-paths-to-its-descendent-leaves"""
+        """Find the height of a tree counting only black nodes
+        - Source: https://stackoverflow.com/questions/13848011/how-to-check-the-black-height-of-a-node-for-all-paths-to-its-descendent-leaves"""
         if root == self.nil:
             return 1
 

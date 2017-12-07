@@ -50,6 +50,8 @@ def plot_nodes_considered_during_repeated_search():
     plt.show()
 
 def plot_size_of_tree_in_memory_during_one_hundred_inserts():
+    """Plots byte size in memory of tree object
+    during 100 hundred insertions"""
     tree = RedBlackTree()
     size_of_tree = []
     n_size = []
@@ -65,6 +67,8 @@ def plot_size_of_tree_in_memory_during_one_hundred_inserts():
     plt.show()
 
 def plot_insertion_time():
+    """Plots microsecond time of inserting 100 nodes into a
+    tree (n times), along with log(number of nodes)"""
     n = 1
 
     insert_fixup_times = return_list_of_n_lists(n)
@@ -92,6 +96,8 @@ def plot_insertion_time():
     plt.show()
 
 def plot_deletion_time():
+    """Plots microsecond time of deleting 15 nodes from
+    a tree (n times), also includes log(number of nodes)"""
     n = 1
 
     list_of_lists = return_list_of_n_lists(n)
@@ -136,6 +142,7 @@ def return_list_of_n_lists(n):
     return [[] for x in xrange(n)]
 
 if __name__ == "__main__":
+    """Creating all of these graphs can take up to one minute"""
     plot_n_thousand_in_order_inserts()
     plot_nodes_considered_during_repeated_search()
     plot_size_of_tree_in_memory_during_one_hundred_inserts()
